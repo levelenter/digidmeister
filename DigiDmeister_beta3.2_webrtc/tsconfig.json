@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    // "module": "esnext",
+    "module": "commonjs",
+    "strict": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "types": ["webpack-env"],
+    "lib": ["es2019"]
+  },
+  "include": ["client/**/*.ts", "server/**/*.ts"],
+  "exclude": ["node_modules"]
+}

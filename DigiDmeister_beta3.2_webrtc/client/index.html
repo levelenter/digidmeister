@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Websocket sample</title>
+    <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+    <script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js"></script>
+    <script src="./spawn-in-circle.component.js"></script>
+  </head>
+  <body>
+    <!-- https://github.com/networked-aframe/networked-aframe -->
+    <!-- 
+      networked-scene属性によって、WebSocketの同一チャネル（チャットルームみたいなもの）を作る
+      adapterとしてsoketioを選ぶことによって、Websocketでの通信になる。
+      ここをwebrtcにするとWebRTCでの通信になる
+      audio:trueを設定し、アバターにnetworked-audio-source属性を設定することで音声共有が可能になる。
+     -->
+    <a-scene networked-scene="room: dev; debug: true; adapter: webrtc; audio:true">
+      <!-- アセット -->
+      <a-assets>
+        <img id="sky" src="./city/43134515491_dca33838f4_o.jpg" crossorigin="anonymous" />
+
+        <!-- アバターをテンプレートにしておく（gltfモデルを読み込むでも良い) -->
+        <a-asset-item id="robo" src="./robot/Robot_01.gltf"></a-asset-item>
+        <a-asset-item id="back" src="./city/Crater.glb"></a-asset-item>
+
+        <template id="avatar-template">
+          <a-entity class="avatar" networked-audio-source>
+            <!-- アバターを作る -->
+            <a-gltf-model position="0 -1.6 0" rotation="0 180 0" scale="0.05 0.05 0.05" src="#robo" animation-mixer=""></a-gltf-model>
+          </a-entity>
+        </template>
+      </a-assets>
+
+      <!-- カメラ＆アバター
+        networkd属性がつけられるところがポイント
+       -->
+      <a-entity id="player" networked="template:#avatar-template;attachTemplateToLocal:false;" camera position="0 3.6 0" spawn-in-circle="radius:3" wasd-controls look-controls> </a-entity>
+
+      <!-- <a-gltf-model position="0 0 0" scale="0.0015 0.0015 0.0015" rotation="90 180 0" src="#home" animation-mixer=""></a-gltf-model> -->
+      <a-gltf-model position="0 -2 0" src="#back" animation-mixer=""></a-gltf-model>
+
+      <a-sky src="#sky" rotation=""></a-sky>
+    </a-scene>
+
+    <script>
+      // ネットワークで同期するテンプレートおよび、属性値を決める
+      // components にposition と rotationをセットしているので、
+      // ランダムにセットされたアバターカラーを同期するためのカスタムスキーマを定義する
+      NAF.schemas.add({
+        template: '#avatar-template',
+        components: ['position', 'rotation'],
+      });
+
+      // Networked-Aframeがサーバーにつながった時に呼ばれる
+      function onConnect() {
+        console.log('onConnect', new Date());
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aframe example</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-slice9-component@1.0.0/dist/aframe-slice9-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.2.0/dist/aframe-environment-component.min.js"></script>
+
+    <script src="./a-component/resize.js"></script>
+    <script src="./a-component/a-clipboard.js" ></script>
+    <script src="./a-component/select-one-image.js" ></script>
+    <script src="./a-component/walled-clip.js" ></script>
+    <script src="./a-component/clip-menu.js" ></script>
+    <script src="./a-component/clip-menu-move.js"></script>
+    <script src="./a-component/clip-menu-close.js"></script>
+    <script src="./a-component/clip-menu-delete.js"></script>
+    <script src="./a-component/click-sound.js"></script>
+    <script src="./a-component/clip-menu-max.js"></script>
+    <script src="./a-component/clip-menu-original.js"></script>
+    
+    
+  </head>
+
+  <body>
+    <a-scene show-menu="target:.menu">
+      <a-assets>
+        <img id="icon" src="./resource/downIcon.png" ></img>
+
+        <a-mixin id="slice" slice9="color: #050505; transparent: true; opacity: 0.5; src: ./resource/slice.png; left: 50; right: 52; top: 50; bottom: 52; padding: 0.15"></<a-mixin>
+        <a-mixin id="arrow" slice9="color: #ffffff;width: 0.1; height: 0.1;transparent: true; opacity: 0.5; src: ./resource/downIcon.png;" ></a-mixin>
+        
+        <!-- <img id="move" color="#000" width="0.1" height="0.1" opacity="0.3" src="./resource/movex512.png" ></img> -->
+        <a-mixin id="move" slice9="color: #ffffff;width: 0.1; height: 0.1;transparent: true; opacity: 0.5; src: ./resource/movex512.png;" ></a-mixin>
+
+        <a-mixin id="close" slice9="color: #ffffff;width: 0.1; height: 0.1;transparent: true; opacity: 0.5; src: ./resource/closex512.png;" ></a-mixin>
+        <a-mixin id="delete" slice9="color: #ffffff;width: 0.1; height: 0.1;transparent: true; opacity: 0.5; src: ./resource/deletex512.png;" ></a-mixin>
+
+        <a-mixin id="expand" slice9="color: #ffffff;width: 0.1; height: 0.1;transparent: true; opacity: 0.5; src: ./resource/expand.png;" ></a-mixin>
+        <a-mixin id="shrink" slice9="color: #ffffff;width: 0.1; height: 0.1;transparent: true; opacity: 0.5; src: ./resource/shrink.png;" ></a-mixin>
+
+        <!-- ボタンホバー -->
+        <a-mixin
+          id="buttonHoverEffect" 
+          animation__mouseenter="property: components.slice9.material.color; type: color; from: #030303; to: #333; easing: easeOutCubic; dur: 150; startEvents: mouseenter"
+          animation__mouseleave="property: components.slice9.material.color; type: color; from: #333; to: #ffffff; easing: easeOutCubic; dur: 150; startEvents: mouseleave"
+        ></a-mixin>
+        
+        <!-- イメージ -->
+        <img id="city" src="./resource/city.jpg" width="3" height="1.5""></img>
+        <img id="night" src="./resource/night.jpg" width="3" height="1.5"></img>
+        <img id="river" src="./resource/river.jpg" width="3" height="1.5"></img>
+
+        <!-- スクリーンオブジェクト -->
+        <a-asset-item id="screen" src="./resource/screen.glb"></a-asset-item>
+
+        <!-- deplicated プラスボタン -->
+        <a-asset-item id="plus" src="./resource/plus_button.glb" ></a-asset-item>
+        <!-- 決定音 -->
+        <audio src="./resource/decision.mp3" id="decision"></audio>
+      </a-assets>
+
+      <a-camera >
+        <a-entity raycaster="objects: .collidable" cursor="fuse:false; rayOrigin: mouse" ></a-entity>
+      </a-camera>
+
+      <!-- スクリーン -->
+      <a-entity id="screen1" a-clipboard="menu:.menu;images:.images" click-sound="src:#decision" gltf-model="#screen" scale="0.1 0.1 0.1" class="collidable" position="0 2 -4" rotation="0 10 0" ></a-entity>
+
+      <!-- Boxスクリーン -->
+      <a-box id="screen2" a-clipboard="menu:.menu;images:.images"  click-sound="src:#decision" class="collidable" scale="3 3 0.1"  position="6 3 -3" rotation="0 10 0"></a-box>
+
+
+      <!-- 予めクリップを用意 -->
+      <a-box scale="1 0.5  0.01" position="-1.1 " walled-clip="wall:#screen1" 
+        clip-menu="menu:#clip_menu" 
+        id="defaultclip1"
+        material="shader: flat; src: #city" scale="2 1 0.01" class="collidable"></a-box>
+
+
+      <!-- ///////////////////
+        // クリップメニュー
+        /////////////////// -->
+      <a-entity id="clip_menu" position="0 1.6 -4" lookat="target:[camera]" visible="false">
+        <!-- menu panel -->
+        <a-entity id="menuBackground" class="collidable" mixin="slice buttonHoverEffect" slice9="width:1;height:1;"></a-entity>
+
+        <!-- close -->
+        <a-entity position="-0.25 0.26 0.01" clip-menu-close click-sound="src:#decision" class="collidable" mixin="close buttonHoverEffect" rotation="0 0 0" scale="1.5 1.5" ></a-entity>
+        <!-- move -->
+        <a-entity position="-0.25 -0.01 0.01" clip-menu-move click-sound="src:#decision" class="collidable" mixin="move buttonHoverEffect" rotation="0 0 0" scale="3 3" ></a-entity>
+        <!-- delete -->
+        <a-entity position="-0.25 -0.28 0.01" clip-menu-delete class="collidable" mixin="delete buttonHoverEffect" rotation="0 0 0" scale="2 2" ></a-entity>
+        
+        <!-- max -->
+        <a-entity position="0.15 0.2 0.02" click-sound="src:#decision" clip-menu-max class="collidable" mixin="expand buttonHoverEffect"  scale="2 2" ></a-entity>
+        <!-- min -->
+        <a-entity position="0.15 0.2 0.02" click-sound="src:#decision" clip-menu-original class="collidable" mixin="shrink buttonHoverEffect"  scale="2 2" ></a-entity>
+        <!-- size up -->
+        <a-entity position="0.15 -0.0 0.02" click-sound="src:#decision" resize="type:up" class="collidable" mixin="arrow buttonHoverEffect" rotation="0 0 180" scale="2 2" ></a-entity>
+        <!-- size down -->
+        <a-entity position="0.15 -0.3 0.02" click-sound="src:#decision" resize="type:down" class="collidable" mixin="arrow buttonHoverEffect"  scale="2 2" ></a-entity>
+      </a-entity>
+
+      <!-- ///////////////////
+        // 画像メニュー
+        ///////////////////  -->
+      <a-entity class="menu" position="0 1.6 -4" lookat="target:[camera]" visible="false">
+        <a-entity id="menuBackground" class="collidable" mixin="slice buttonHoverEffect" slice9="width:4;height:1;"></a-entity>
+
+        <a-entity position="-1.8 0.3 0.01" clip-menu-close click-sound="src:#decision" class="collidable" mixin="close buttonHoverEffect" rotation="0 0 0" scale="1.5 1.5" ></a-entity>
+
+        <a-entity position="0 0 0.02" class="images">
+          <a-box scale="1 0.5  0.01" position="-1.1 " material="shader: flat; src: #city" click-sound="src:#decision"  opacity="0.3" class="collidable"></a-box>
+          <a-box scale="1 0.5  0.01" position="0    " material="shader: flat; src: #night" click-sound="src:#decision" 　opacity="0.3" class="collidable"></a-box>
+          <a-box scale="1 0.5  0.01" position="1.1  " material="shader: flat; src: #river"click-sound="src:#decision"  opacity="0.3" class="collidable"></a-box>
+        </a-entity>
+      </a-entity>
+
+      <a-entity environment="preset:forest"></a-entity>
+    </a-scene>
+  </body>
+</html>
